@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Marketing Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #011653;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 18px;
+            border: none;
+            background: #011653;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #011653;
+        }
+
+        .response {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #eef1ff;
+            border-left: 4px solid #011653;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>Email Marketing Dashboard</header>
+
+<div class="container">
+
+    
+    <div class="card">
+        <h2>Adicionar Email</h2>
+        <label>Email:</label>
+        <input type="email" id="add_email_input">
+
+        <button onclick="addEmail()">Adicionar</button>
+
+        <div class="response" id="add_email_response"></div>
+    </div>
+
+    
+    <div class="card">
+        <h2>Enviar Email</h2>
+        <label>Para:</label>
+        <input type="email" id="send_to">
+
+        <label>Assunto:</label>
+        <input type="text" id="send_subject">
+
+        <label>Mensagem:</label>
+        <textarea id="send_body" rows="5"></textarea>
+
+        <button onclick="sendEmail()">Enviar Email</button>
+
+        <div class="response" id="send_email_response"></div>
+    </div>
+
+    
+    <div class="card">
+        <h2>Agendar Email</h2>
+        <label>Para:</label>
+        <input type="email" id="schedule_to">
+
+        <label>Assunto:</label>
+        <input type="text" id="schedule_subject">
+
+        <label>Mensagem:</label>
+        <textarea id="schedule_body" rows="5"></textarea>
+
+        <label>Data e Hora:</label>
+        <input type="text" id="schedule_date">
+
+        <button onclick="scheduleEmail()">Agendar Email</button>
+
+        <div class="response" id="schedule_response"></div>
+    </div>
+
+    
+    <div class="card">
+        <h2>Gerar Relatório</h2>
+
+        <button onclick="generateReport()">Gerar CSV</button>
+
+        <div class="response" id="report_response"></div>
+    </div>
+
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:5000";
+
+    
+    async function addEmail() {
+        const email = document.getElementById("add_email_input").value;
+
+        const response = await fetch(`${API_URL}/add_email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+        document.getElementById("add_email_response").innerText = result.message;
+    }
+
+    
+    async function sendEmail() {
+        const to = document.getElementById("send_to").value;
+        const subject = document.getElementById("send_subject").value;
+        const body = document.getElementById("send_body").value;
+
+        const response = await fetch(`${API_URL}/send_email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ to, subject, body })
+        });
+
+        const result = await response.json();
+        document.getElementById("send_email_response").innerText =
+            result.message || result.error;
+    }
+
+    
+    async function scheduleEmail() {
+        const to = document.getElementById("schedule_to").value;
+        const subject = document.getElementById("schedule_subject").value;
+        const body = document.getElementById("schedule_body").value;
+        const run_date = document.getElementById("schedule_date").value;
+
+        const response = await fetch(`${API_URL}/schedule_email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ to, subject, body, run_date })
+        });
+
+        const result = await response.json();
+        document.getElementById("schedule_response").innerText = result.message;
+    }
+
+    
+    async function generateReport() {
+        const response = await fetch(`${API_URL}/generate_report`);
+        const result = await response.json();
+        document.getElementById("report_response").innerText = result.message;
+    }
+</script>
+
+</body>
+</html>
