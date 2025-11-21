@@ -6,3 +6,4 @@ emails.db
 report.csv
 env/
 venv/
+.gitattributes
